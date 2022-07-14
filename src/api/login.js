@@ -1,0 +1,18 @@
+import request from '@/utils/request'
+/**
+ * 登录
+ * @param {*} param
+ * @returns
+ */
+export const login = ({ username, password }) => {
+  return request(
+    {
+      method: 'POST',
+      url: 'login',
+      data: {
+        username,
+        password
+      }
+    }
+  )
+}
