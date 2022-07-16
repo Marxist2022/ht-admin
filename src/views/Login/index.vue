@@ -21,7 +21,7 @@
         <!-- //--------------------登录 按钮---------------------- -->
         <el-form-item class="btn-item">
           <!-- //*登录按钮 -->
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="primary" @click="handleLogin">登录</el-button>
           <!-- //*重置按钮 -->
           <el-button type="info" @click="reset">重置</el-button>
         </el-form-item>
@@ -31,17 +31,17 @@
 </template>
 
 <script>
-import { login } from '@/api/login'
+
 export default {
   created () { },
   data () {
     return {
-      // ------------------------------------------
-      loginForm: { // 1.用户信息
-        username: '', // 用户名称
-        password: ''// 用户密码
+      // --------------------用户信息----------------------
+      loginForm: {
+        username: 'admin', // 用户名称
+        password: '123456'// 用户密码
       },
-      // 2.表单校验规则
+      // --------------------表单验证规则----------------------
       rules: { // 2.表单校验规则
         username: [// 用户名校验规则
           // 表单必须填写不能为空
@@ -58,20 +58,22 @@ export default {
     }
   },
   methods: {
-    // 1重置表单
+    // --------------------重置表单----------------------
     reset () {
       this.$refs.loginFormRef.resetFields()
     },
-    // 2解决bug
-    async login () {
+    // --------------------登录----------------------
+    async handleLogin () {
       try {
         // 等待dom生效才下一步
         await this.$refs.loginFormRef.validate()
         console.log('校验成功')
         // 2.1登录
         try {
-          const res = await login(this.loginForm)
-          console.log(res)
+          this.$store.dispatch('user/login', this.loginForm)
+          // const res = await login(this.loginForm)
+          // console.log(res)
+
           // todo待办 把token存在vuex中，并且持久化 localStorage
           this.$router.push('/home')
         } catch (error) {
