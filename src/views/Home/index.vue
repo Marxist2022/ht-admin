@@ -2,12 +2,18 @@
   <el-container class="container">
     <!-- //------ 顶部导航栏 ------ -->
     <el-header>
+      <!-- // ------logo -->
       <span
         ><img
           src="@/assets/1B62E8F3-4E8A-458D-B75D-C44462C926AA_1_105_c.jpeg"
           alt=""
       /></span>
-      <span class="titel">公司管理系统</span>
+      <!-- //---标题 -->
+      <span class="titel">小厂子管理系统</span>
+      <div class="right">
+        <!-- //----退出 -->
+        <div class="exit" @click="logout">退出</div>
+      </div>
     </el-header>
     <el-container>
       <!-- //------ 侧边栏 ------ -->
@@ -35,21 +41,21 @@
       <!--//3 ⬆⬆⬆⬆⬆ 左侧 ⬆⬆⬆⬆⬆-->
       <!-- //------ 主橱窗 ------ -->
       <el-main>
-        <router-view>
+        <div class="mainApp">
           <!-- //------ 二级路由视口内容区 ------ -->
-        </router-view>
+          <router-view> </router-view>
+        </div>
       </el-main>
     </el-container>
   </el-container>
 </template>
 <script>
-// import { getToken } from '@/utils/auth'
+// import { setMenus } from '@/utils/auth'
 export default {
   async created () {
     // --- 页面创建的时候就出发请求获得侧边栏表单 ---
     await this.$store.dispatch('menus/getMenus')
-    this.MenusList = this.$store.state.menus.AsideList
-    console.log(this.MenusList)
+    this.MenusList = await this.$store.state.menus.AsideList
   },
   data () {
     return {
@@ -57,15 +63,21 @@ export default {
       MenusList: []
     }
   },
-  methods: {},
+  methods: {
+    // --- 退出登录 ---
+    async logout () {
+      // --- 发送退出登录请求 ---
+      await this.$store.dispatch('user/logout')
+      // --- 跳转到登录页面 ---
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    }
+  },
   computed: {
-
   },
   watch: {},
   filters: {},
   components: {},
-  mounted () {
-    console.log(this.$store.state.menus.AsideList)
+  async mounted () {
   }
 }
 </script>
@@ -100,6 +112,29 @@ export default {
   // 修复侧边栏突出的bug
   .el-menu {
     border-right: none;
+  }
+}
+// ------ 主橱窗 ------
+// .mainApp {
+//   padding: 20px;
+// }
+.right {
+  float: right;
+  height: 100%;
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  .exit {
+    margin-top: 10px;
+    padding: 12px 20px;
+    width: 100%;
+    height: 40px;
+
+    background-color: #fff;
+    font-size: 14px;
+    line-height: 14px;
+    color: #000;
   }
 }
 </style>

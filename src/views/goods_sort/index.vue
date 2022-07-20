@@ -1,5 +1,5 @@
 <template>
-  <div>角色列表</div>
+  <div>商品分类goods_sort</div>
 </template>
 
 <script>

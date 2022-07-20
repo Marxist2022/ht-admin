@@ -1,5 +1,5 @@
 <template>
-  <div>分类参数</div>
+  <div>数据报表data_list</div>
 </template>
 
 <script>

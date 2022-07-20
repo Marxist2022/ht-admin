@@ -3,6 +3,7 @@ import Cookies from 'js-cookie'
 
 // ---------获取token-----------
 const TokenKey = 'vue_admin_template_token'
+const Menus = 'vue_admin_template_Menus'
 // 获取token
 export function getToken () {
   return Cookies.get(TokenKey)
@@ -24,4 +25,14 @@ export function setTime (time) {
 // 获取时间戳
 export function getTime () {
   return Cookies.get(TimeKey)
+}
+// ---------设置菜单-----------
+// 获取菜单
+export function setMenus (Menu) {
+  return Cookies.set(Menus, Menu)
+}
+// ---------获取菜单-----------
+// 获取token
+export function getMenus () {
+  return Cookies.get(Menus)
 }

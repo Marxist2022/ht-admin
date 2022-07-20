@@ -1,5 +1,5 @@
 import { login } from '@/api/user'
-import { setToken, getToken } from '@/utils/auth'
+import { setToken, getToken, removeToken } from '@/utils/auth'
 
 const state = {
   token: getToken(), // token
@@ -7,13 +7,22 @@ const state = {
 
 }
 const mutations = {
-  // 设置token
+  // ---------- 设置token ----------
   setToken (state, payload) {
     state.token = payload
   },
-  // 设置用户信息
+  // ---------- 设置用户信息 ----------
   setUserInfo (state, payload) {
     state.userInfo = payload
+  },
+  // ---------- 删除token ----------
+  removeToken (state) {
+    state.token = null
+    removeToken()// 删除token 在auth.js中
+  },
+  // ---------- 删除用户信息 ----------
+  removeUserInfo (state) {
+    state.userInfo = {}
   }
 
 }
@@ -30,7 +39,12 @@ const actions = {
     console.log(userToken)
     // ---- 把token存入cookie -----
     setToken(userToken)
-    console.log(getToken())
+    // console.log(getToken())
+  },
+  // ----- 退出 ----
+  logout (context) {
+    context.commit('removeToken')
+    context.commit('removeUserInfo')
   }
 }
 

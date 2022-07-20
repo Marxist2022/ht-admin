@@ -1,5 +1,5 @@
 <template>
-  <div>商品分类</div>
+  <div>分类参数sort_param</div>
 </template>
 
 <script>

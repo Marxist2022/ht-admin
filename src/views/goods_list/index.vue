@@ -1,5 +1,5 @@
 <template>
-  <div>商品列表</div>
+  <div>商品列表goods_list</div>
 </template>
 
 <script>

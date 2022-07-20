@@ -18,7 +18,7 @@ request.interceptors.request.use(function (config) {
       store.dispatch('user/logout')// 清除token
       router.push('/login')// 跳转到登录页面
     }
-    console.log(token)
+    // console.log(token)// 打印token
     config.headers.Authorization = token// 设置请求头
   }
   // 在发送请求之前做些什么

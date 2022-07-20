@@ -20,9 +20,7 @@
         </el-form-item>
         <!-- //--------------------登录 按钮---------------------- -->
         <el-form-item class="btn-item">
-          <!-- //*登录按钮 -->
           <el-button type="primary" @click="handleLogin">登录</el-button>
-          <!-- //*重置按钮 -->
           <el-button type="info" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -31,7 +29,6 @@
 </template>
 
 <script>
-
 export default {
   created () { },
   data () {
@@ -67,13 +64,11 @@ export default {
       try {
         // 等待dom生效才下一步
         await this.$refs.loginFormRef.validate()
-        console.log('校验成功')
+        // console.log('校验成功')
         // 2.1登录
         try {
-          this.$store.dispatch('user/login', this.loginForm)
-          // const res = await login(this.loginForm)
-          // console.log(res)
-
+          // ----- 发起登录之后 再跳转 -----
+          await this.$store.dispatch('user/login', this.loginForm)
           // todo待办 把token存在vuex中，并且持久化 localStorage
           this.$router.push('/home')
         } catch (error) {
@@ -89,6 +84,7 @@ export default {
   watch: {},
   filters: {},
   components: {}
+
 }
 </script>
 

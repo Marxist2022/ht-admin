@@ -1,5 +1,5 @@
 <template>
-  <div>数据报表</div>
+  <div class="welcome">欢迎登陆</div>
 </template>
 
 <script>
@@ -23,5 +23,9 @@ export default {
 }
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang='less'>
+.welcome {
+  font-size: 16px;
+  color: #000;
+}
 </style>
