@@ -1,91 +1,72 @@
 import request from '@/utils/request'
 /**
- * 商品分类数据列表
+ * 商品分类数据列表1
  * @param {*} param
  * @returns
  */
-export const getGoodsList = ({ pagenum, pagesize, type }) => {
+export const getGoodsList = ({ pagenum, pagesize, query }) => {
   return request({
     url: 'goods',
     params: {
       pagenum,
       pagesize,
-      type
+      query
     }
   })
 }
-/**
- *  修改用户状态
- * @param {*} param
- * @returns
- */
-export const setSwitchType = (uId, type) => {
-  return request({
-    method: 'put',
-    url: `users/${uId}/state/${type}`
 
-  })
-}
 /**
- *  添加用户
+ *  删除货物1
  * @param {*} data
  * @returns
  */
-export const addNewUserApi = (data) => {
-  return request({
-    method: 'post',
-    url: 'users',
-    data
-  })
-}
-/**
- *  添加用户
- * @param {*} data
- * @returns
- */
-export const delUserInfo = (id) => {
+export const delGoodsInfo = (id) => {
   return request({
     method: 'delete',
-    url: `users/${id}`
+    url: `goods/${id}`
   })
 }
 
 /**
- *  编辑用户
+ *  编辑商品1
  * @param {*} data
  * @returns
  */
-export const editUserInfo = (id, email, mobile) => {
+export const editGoodsInfo = (id, goodsName, goodsPrice, goodsNumber, goodsWeight) => {
   return request({
     method: 'put',
-    url: `users/${id}`,
+    url: `goods/${id}`,
     data: {
-      email,
-      mobile
+      goods_name: goodsName,
+      goods_price: goodsPrice,
+      goods_number: goodsNumber,
+      goods_weight: goodsWeight
     }
   })
 }
 /**
- *  设置用户角色
+ *  获取商品分类管理
  * @param {*} data
  * @returns
  */
-export const setUserInfo = (id, rid) => {
+export const getGoodsCategoriesListApi = () => {
   return request({
-    method: 'put',
-    url: `users/${id}`,
-    data: {
-      rid
-    }
+    method: 'get',
+    url: 'categories'
+
   })
 }
 /**
- *  获取角色列表
+ *  分类参数管理
  * @param {*} data
  * @returns
  */
-export const getrolesList = () => {
+export const getattributesListApi = (id) => {
   return request({
-    url: 'roles'
+    method: 'get',
+    url: `categories/${id}/attributes`,
+    params: {
+      sel: 'many'
+    }
   })
 }

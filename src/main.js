@@ -7,7 +7,7 @@ import '@/styles/reset.less'// 应用初始化css样式
 import ElementUI from 'element-ui'// 引用饿了么组件
 import locale from 'element-ui/lib/locale/lang/zh-CN'
 import 'element-ui/lib/theme-chalk/index.css'// 饿了么应用样式
-
+import '@/utils/dayjs'
 import Breadcrumb from '@/components/Breadcrumb'
 Vue.component('Breadcrumb', Breadcrumb)
 Vue.config.productionTip = false

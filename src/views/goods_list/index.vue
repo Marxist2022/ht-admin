@@ -4,18 +4,18 @@
     <Breadcrumb level1="商品管理" level2="商品列表"></Breadcrumb>
     <!-- //组件 主体卡片 -->
     <div class="body">
-      <el-card class="box-card">
+      <el-card class="box-card" v-show="!addFormVisible">
         <!-- //-- 头部 -->
         <el-row :gutter="10">
           <el-col :span="8"
             ><div class="grid-content bg-purple">
-              <!-- //-搜索框 -->
+              <!-- //组件 -搜索框 1-->
               <el-input
                 placeholder="请输入内容"
                 v-model="page.query"
                 class="input-with-select"
               >
-                <!-- //-搜索按钮 -->
+                <!-- //组件 -搜索按钮 1-->
                 <el-button
                   slot="append"
                   icon="el-icon-search"
@@ -25,8 +25,8 @@
           ></el-col>
           <el-col :span="3"
             ><div class="grid-content bg-purple">
-              <!-- //-添加按钮 -->
-              <el-button type="primary" @click="addUser"> 添加商品</el-button>
+              <!-- //组件 -添加按钮 -->
+              <el-button type="primary" @click="addGoods"> 添加商品</el-button>
             </div></el-col
           >
         </el-row>
@@ -35,7 +35,7 @@
         <el-table :data="goodsList" stripe style="width: 100%" border>
           <!-- //-# -->
           <el-table-column type="index" label="#"> </el-table-column>
-          <!-- //-姓名 -->
+          <!-- //-商品名称 -->
           <el-table-column
             prop="goods_name"
             label="商品名称"
@@ -50,38 +50,34 @@
           <!-- //-创建时间 -->
           <el-table-column prop="add_time" label="创建时间">
             <!-- //-状态 开关插槽 -->
+            <template slot-scope="scope">
+              {{ scope.row.add_time | relativeTime }}</template
+            >
           </el-table-column>
-          <!-- //-后面三个按钮操作 -->
+          <!-- //-后面2个按钮操作 -->
           <el-table-column prop="address" label="操作">
             <template slot-scope="scope">
               <el-row :gutter="10">
                 <!-- //-编辑 按钮-->
-                <el-col :span="8">
+                <el-col :span="12">
                   <el-button
-                    @click="getEditUserInfo(scope.row)"
+                    @click="getEditGoodsInfo(scope.row)"
                     type="primary"
                     icon="el-icon-edit"
                     size="mini"
-                  ></el-button
-                ></el-col>
+                    >编辑</el-button
+                  ></el-col
+                >
                 <!-- //-删除 按钮-->
-                <el-col :span="8">
+                <el-col :span="12">
                   <el-button
-                    @click="deleteUserId(scope.row.id)"
+                    @click="deleteGoodsId(scope.row.goods_id)"
                     type="danger"
                     icon="el-icon-delete"
                     size="mini"
-                  ></el-button
-                ></el-col>
-                <!-- //-设置 按钮 -->
-                <el-col :span="8">
-                  <el-button
-                    @click="getSetUserInfo(scope.row)"
-                    type="warning"
-                    icon="el-icon-setting"
-                    size="mini"
-                  ></el-button
-                ></el-col>
+                    >删除</el-button
+                  ></el-col
+                >
               </el-row>
             </template>
           </el-table-column>
@@ -106,36 +102,85 @@
           ></el-col>
         </el-row>
       </el-card>
-    </div>
-    <!-- //组件：添加用户卡片组件 -->
-    <el-dialog title="添加用户对话框" :visible.sync="addFormVisible">
-      <el-form
-        label-width="80px"
-        :model="newgoodsListInfo"
-        :rules="rules"
-        ref="newgoodsListInfo"
-      >
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="newgoodsListInfo.username"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="newgoodsListInfo.password"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="newgoodsListInfo.email"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="newgoodsListInfo.mobile"></el-input>
-        </el-form-item>
-      </el-form>
-      <!-- //---弹出框底部按钮 -->
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addNewUser('newgoodsListInfo')"
-          >确 定</el-button
+      <!-- //---添加商品 按钮--- -->
+      <el-card class="box-card" v-show="addFormVisible">
+        <!-- //组件 上面灰色的提示栏 -->
+        <el-alert title="添加商品信息" center type="info" show-icon> </el-alert>
+        <!-- //组件 步骤栏 -->
+        <el-steps
+          :space="200"
+          :active="0"
+          style="padding: 15px 0"
+          finish-status="success"
+          align-center
         >
-      </div>
-    </el-dialog>
+          <el-step title="基本信息"></el-step>
+          <el-step title="商品参数"></el-step>
+          <el-step title="商品属性"></el-step>
+          <el-step title="商品图片"></el-step>
+          <el-step title="商品内容"></el-step>
+          <el-step title="完成"></el-step>
+        </el-steps>
+        <!-- //组件  侧边滑动开关 -->
+        <el-tabs :tab-position="'left'" @tab-click="getGoodsAttr('formName1')">
+          <!-- //--- 左边滑框 基本信息 1/5-->
+          <el-tab-pane label="基本信息">
+            <!-- //组件 表格 -->
+            <el-form :model="newgoodsListInfo" ref="formName1" :rules="rules">
+              <!-- //--- 商品名称 -->
+              <el-form-item prop="goods_name" label="商品名称">
+                <el-input v-model="newgoodsListInfo.goods_name"></el-input>
+              </el-form-item>
+              <!-- //--- 商品价格 -->
+              <el-form-item prop="goods_price" label="商品价格">
+                <el-input
+                  type="number"
+                  v-model="newgoodsListInfo.goods_price"
+                ></el-input>
+              </el-form-item>
+              <!-- //--- 商品重量 -->
+              <el-form-item prop="goods_weight" label="商品重量">
+                <el-input
+                  type="number"
+                  v-model="newgoodsListInfo.goods_weight"
+                ></el-input>
+              </el-form-item>
+              <!-- //& 数据绑定和 表单校验规则 -->
+              <!-- //--- 商品数量 -->
+              <el-form-item prop="goods_number" label="商品数量">
+                <el-input
+                  type="number"
+                  v-model="newgoodsListInfo.goods_number"
+                ></el-input>
+              </el-form-item>
+              <!-- //--- 商品分类 -->
+              <el-form-item prop="goods_cat" label="商品分类">
+                <el-cascader
+                  v-model="value"
+                  :props="{ label: 'cat_name', value: 'cat_id', children }"
+                  :options="options"
+                  @change="handleChange"
+                ></el-cascader>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+          <!-- //--- 左边滑框 商品参数 2/5-->
+          <el-tab-pane label="商品参数">
+            <el-form>
+              <el-form-item prop="goods_attr" label="商品参数"> </el-form-item>
+              <el-form-item prop="goods_attr" label="商品参数"> </el-form-item>
+            </el-form>
+          </el-tab-pane>
+          <!-- //--- 左边滑框 商品属性 3/5-->
+          <el-tab-pane label="商品属性">商品属性</el-tab-pane>
+          <!-- //--- 左边滑框 商品图片 4/5-->
+          <el-tab-pane label="商品图片">商品图片</el-tab-pane>
+          <!-- //--- 左边滑框 商品内容 5/5-->
+          <el-tab-pane label="商品内容">商品内容</el-tab-pane>
+        </el-tabs>
+      </el-card>
+    </div>
+
     <!-- //组件： 编辑用户 -->
     <el-dialog title="编辑用户" :visible.sync="editFormVisible">
       <el-form
@@ -144,80 +189,68 @@
         :rules="rules"
         ref="newgoodsListInfo"
       >
-        <el-form-item label="用户名称" prop="username">
-          <el-input v-model="newgoodsListInfo.username" disabled></el-input>
+        <el-form-item label="商品名称" prop="goods_name">
+          <el-input v-model="newgoodsListInfo.goods_name" disabled></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="newgoodsListInfo.email"></el-input>
+        <el-form-item label="价格" prop="goods_price">
+          <el-input v-model="newgoodsListInfo.goods_price"></el-input>
         </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="newgoodsListInfo.mobile"></el-input>
+        <el-form-item label="数量" prop="goods_weight">
+          <el-input v-model="newgoodsListInfo.goods_weight"></el-input>
         </el-form-item>
       </el-form>
       <!-- //--- 编辑用户弹出框  确定 取消按钮-->
       <div slot="footer" class="dialog-footer">
         <el-button @click="editFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUserInfo()">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="分配角色" :visible.sync="setFormVisible">
-      <p>当前的用户:{{ setUserInfo.username }}</p>
-      <p>当前的角色:{{ setUserInfo.nowRole }}</p>
-      <p>
-        <span>分配新角色:</span>
-        <el-select v-model="setUserInfo.serRole" placeholder="请选择">
-          <el-option
-            v-for="(role, index) in roleList"
-            :key="index"
-            :label="role.roleName"
-            :value="role.id"
-          >
-          </el-option>
-        </el-select>
-      </p>
-      <!-- //--- 编辑用户弹出框  确定 取消按钮-->
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="setFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="SetUserInfo()">确 定</el-button>
+        <el-button type="primary" @click="editGoodsInfo()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getGoodsList, setSwitchType, addNewUserApi, delUserInfo, editUserInfo, setUserInfo, getrolesList } from '@/api/goods_list.js'
+import { getGoodsList, getGoodsCategoriesListApi, delGoodsInfo, editGoodsInfo, getattributesListApi } from '@/api/goods_list.js'
 export default {
   created () {
     // --- 页面创建就获取用户列表 ---
     this.getGoodsList()
+    this.getGoodsCategoriesList()
   },
   data () {
     return {
       // ---ajax 添加用户对话框表单信息 ---
       newgoodsListInfo: {
-        username: '卷卷',
-        password: '123456',
-        email: '123@qq.com',
-        mobile: '13132324334'
+        goods_name: '卷卷', // 商品名称*
+        goods_cat: '123456', // 分类列表*
+        goods_price: '123456', // 价格*
+        goods_number: '', // 数量*
+        goods_weight: '123@qq.com', // 重量*
+        goods_introduce: '', // 介绍
+        pics: '', // 上传的图片临时路径（对象）
+        attrs: '' // 商品的参数（数组）
       },
       // --- 添加用户对话框表单校验 ---
       rules: {
-        username: [
-          { required: true, message: '请输入用户名称', trigger: 'blur' },
-          { min: 2, max: 7, message: '长度在2到7个字符', trigger: 'blur' }
+        goods_name: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' },
+          { min: 2, max: 8, message: '长度在2到8个字符', trigger: 'blur' }
         ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 2, max: 7, message: '长度在2到7个字符', trigger: 'blur' }
+        goods_price: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
-        email: [
-          { required: true, message: '请输入邮箱', trigger: 'blur' },
-          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+        goods_weight: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
-        mobile: [
-          { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确', trigger: 'blur' },
-          { required: true, message: '请输入手机号', trigger: 'blur' }
+        goods_number: [
+          { required: true, message: '请输入商品价格', trigger: 'blur' }
+        ],
+        goods_cat: [
+          { required: true, message: '请输入商品重量', trigger: 'blur' }
         ]
+        // add_time: [
+        //   { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确', trigger: 'blur' },
+        //   { required: true, message: '请输入手机号', trigger: 'blur' }
+        // ]
       },
       // --- 添加用户对话框开关 ---
       addFormVisible: false, // 添加新用户对话框开关
@@ -237,65 +270,77 @@ export default {
       editId: '',
       // --- 获取回来的 setId ---
       setUserInfo: {
-        userId: '', // 用户id
-        username: '', // 用户名称
-        nowRole: '', // 当前角色
-        serRole: '', // 分配新角色
-        setRoleName: ''// 分配新角色名称
+        goods_id: '', // 用户id
+        goods_name: '', // 商品名称
+        goods_price: '', // 价格
+        goods_number: '', // 数量
+        goods_weight: '', // 重量
+        goods_introduce: ''// 介绍
       },
       // --- 获取来的角色列表 ---
-      roleList: [] // 角色列表
+      roleList: [], // 角色列表
+      options: [], // 商品分类列表
+      value: [], // 商品分类列表
+      GoodsCategoriesList: []// 商品分类列表
     }
   },
-  // 1 ---------------分界----------------------
+  // 1 ------- 分界 ----------
   methods: {
-    // --- 后台获取角色列表 获取单条信息 齿轮按钮  ---
-    async getSetUserInfo (setInfo) {
-      try {
-        const res = await getrolesList()// 获取角色列表
-        // console.log('获取角色列表', res)
-        // console.log('列表', setInfo)
-        this.roleList = res.data.data// 角色列表
-        console.log('分配按钮单条信息', setInfo)
-        this.setUserInfo.username = setInfo.username// 用户名称
-        this.setUserInfo.userId = setInfo.id// 用户id
-        this.setUserInfo.nowRole = setInfo.role_name// 当前角色
-        this.setFormVisible = true// 显示分配角色对话框
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    // --- 设置最新的角色  ---
-    async SetUserInfo () {
-      this.setFormVisible = false// 关闭分配角色对话框
-      try {
-        console.log('role', this.setUserInfo.serRole, 'userid', this.setUserInfo.username)
-        const res = await setUserInfo(this.setUserInfo.userId, this.setUserInfo.username)// 传递用户id和角色id
-        console.log('提交新角色的结果返回', res)
-        if (res.data.meta.status === 200) { // 更新成功
-          this.$message.success(res.data.meta.msg)
-        } else { // 更新失败
-          this.$message.error(res.data.meta.msg)
+
+    // --- 商品参数tab 被点击 1 ---
+    getGoodsAttr (formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          try {
+            const res = await getattributesListApi(this.value[this.value.length - 1])
+            console.log('7878', res)
+          } catch (error) {
+            console.log(error)
+          }
+        } else {
+          console.log('error submit!!')
+          return false
         }
-        this.getGoodsList()
+      })
+    },
+    // --- 商品分类 下拉框 变化 2/2---
+    handleChange (value) {
+      console.log(value)
+      this.newgoodsListInfo.goods_cat = value
+      console.log(value)
+    },
+    // --- 基本信息1/2 ---
+    async getGoodsCategoriesList () {
+      try {
+        const res = await getGoodsCategoriesListApi()
+        this.options = res.data.data
+        console.log('商品分类列表', res)
+        this.GoodsCategoriesList = res.data.data
       } catch (error) {
         console.log(error)
       }
     },
+
     // 1 ---------------编辑用户信息按钮模块----------------------
-    // --- 获取 要编辑 用户信息  ---
-    async getEditUserInfo (editInfo) {
+    // --- 获取 要编辑 goods信息  ---
+    async getEditGoodsInfo (editInfo) {
+      console.log('编辑的用户信息', editInfo)
       this.editFormVisible = true// 显示编辑用户对话框
-      this.editId = editInfo.id
-      this.newgoodsListInfo.username = editInfo.username
-      this.newgoodsListInfo.email = editInfo.email
-      this.newgoodsListInfo.mobile = editInfo.mobile
+      this.editId = editInfo.goods_id// id
+      this.newgoodsListInfo.goods_name = editInfo.goods_name// 名称
+      this.newgoodsListInfo.goods_price = editInfo.goods_price// 价格
+      this.newgoodsListInfo.goods_number = editInfo.goods_number// 数量
+      this.newgoodsListInfo.goods_weight = editInfo.goods_weight// 重量
     },
 
     // --- 编辑用户信息提交  ---
-    async editUserInfo () {
+    async editGoodsInfo () {
       try {
-        await editUserInfo(this.editId, this.newgoodsListInfo.email, this.newgoodsListInfo.mobile)
+        await editGoodsInfo(this.editId,
+          this.newgoodsListInfo.goods_name,
+          this.newgoodsListInfo.goods_price,
+          this.newgoodsListInfo.goods_number,
+          this.newgoodsListInfo.goods_weight)
         this.getGoodsList()
         this.editFormVisible = false
       } catch (error) {
@@ -304,13 +349,13 @@ export default {
     },
     // 1 ---------------####----------------------
     // --- 删除用户信息按钮  包含了弹出框---
-    async deleteUserId (id) {
+    async deleteGoodsId (id) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delUserInfo(id).then(res => {
+        delGoodsInfo(id).then(res => {
           if (res.data.meta.status === 200) { // 删除成功
             this.$message.success(res.data.meta.msg)
             this.getGoodsList()
@@ -325,72 +370,27 @@ export default {
         })
       })
     },
-    // --- 确定添加按钮 ---
-    addNewUser () {
-      // 表单校验
-      this.$refs.newgoodsListInfo.validate((valid) => {
-        if (valid) { // 如果成功
-          this.addNewUserApi()
-        } else {
-          this.$message.error({
-            message: '表单校验失败'
-          })
-          return false
-        }
-      })
-    },
-    // --- 添加用户api 请求 ---
-    async addNewUserApi () {
-      try {
-        // 发送请求
-        const res = await addNewUserApi(this.newgoodsListInfo)
-        // 刷新列表
-        this.getGoodsList()
-        // 提示
-        this.$message({
-          message: res.data.meta.msg,
-          type: 'success'
-        })
-        this.addFormVisible = false
-      } catch (error) {
-        console.log(error)
-        this.$message.error({
-          message: error.data.meta.msg
-        })
-      }
-    },
-    // --- 添加用户按钮事件 ---
-    addUser () {
+
+    // --- 添加商品 按钮事件 1---
+    addGoods () {
       this.addFormVisible = true
     },
-    // --- 搜索按钮事件 ---
+    // --- 搜索按钮事件 1---
     async search_btn () {
-      // --- 搜索关键词过滤返回赋给表格数组 ---
+      // --- 搜索关键词过滤返回赋给表格数组 1---
       this.getGoodsList()
     },
-    // --- 状态开关 事件 ---
-    async switchFn (uId, type) {
-      try {
-        await setSwitchType(uId, type)// 1 修改状态
-        this.$message({
-          message: '修改用户状态成功',
-          type: 'success'
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    // --- 设置每页条数函数 ---
+    // --- 设置每页条数函数 1---
     handleSizeChange (val) {
       this.page.pagesize = val
       this.getGoodsList()
     },
-    // --- 设置当前页面函数 ---
+    // --- 设置当前页面函数 1---
     handleCurrentChange (val) {
       this.page.pagenum = val
       this.getGoodsList()
     },
-    // --- 请求用户列表函数 ---
+    // --- 请求用户列表函数 1---
     async getGoodsList () {
       try {
         // 发送ajax
