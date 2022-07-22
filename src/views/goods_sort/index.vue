@@ -54,15 +54,24 @@
           >
           <!-- //-操作 5/5-->
           <el-table-column prop="username" label="操作" style="width: 70px"
-            ><template>
+            ><template slot-scope="scopes">
               <el-row :gutter="10">
                 <el-col :span="12">
-                  <el-button type="primary" icon="el-icon-edit" size="mini">
+                  <el-button
+                    type="primary"
+                    icon="el-icon-edit"
+                    size="mini"
+                    @click="eidtSortVisibleFn(scopes.row.cat_id)"
+                  >
                     编辑</el-button
                   ></el-col
                 >
                 <el-col :span="12">
-                  <el-button type="danger" icon="el-icon-delete" size="mini"
+                  <el-button
+                    type="danger"
+                    icon="el-icon-delete"
+                    size="mini"
+                    @click="delFn(scopes.row.cat_id)"
                     >删除</el-button
                   ></el-col
                 >
@@ -70,7 +79,7 @@
             </template></el-table-column
           >
         </el-table>
-        <!-- //组件：下面页码 -->
+        <!-- //组件：下面页码 ok-->
         <el-row :gutter="20">
           <el-col :span="8"
             ><div class="grid-content bg-purple">
@@ -89,13 +98,36 @@
               </div></div
           ></el-col>
         </el-row>
+        <!-- //组件：编辑分类弹窗 -->
+        <el-dialog
+          :visible="eidtSortVisible"
+          title="编辑分类"
+          :before-close="handleClose"
+        >
+          <el-form>
+            <el-form-item
+              label="分类名称"
+              label-width="100px
+            "
+            >
+              <el-input
+                v-model="eidtNewSort"
+                placeholder="请输入分类"
+              ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="eidtSortFn()">提交</el-button>
+              <el-button @click="eidtSortVisible = false">取消</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import { getGoodsRortList } from '@/api/goods_sort'
+import { getGoodsRortList, delSortApi, eidtSortApi } from '@/api/goods_sort'
 export default {
   created () {
     this.getGoodsRortList()// 初始化获取数据
@@ -114,25 +146,71 @@ export default {
       pagenum: null, // 返回回来的当前页码
       totalpage: null, // 返回回来的总记录数
       //= ===== 开关量 ======
-
+      eidtSortVisible: false, // 编辑
       //= ===== 中继数据 ======
       levelList: ['一级', '二级', '三级'], // 分类级别
-      levelListType: ['light', 'success', 'warning'] // 分类级别
+      levelListType: ['light', 'success', 'warning'], // 分类级别
+      eidtNewSort: '',
+      editId: ''
     }
   },
   methods: {
-    // --- 设置每页条数函数 ---
+    // eidtSortApi
+    async eidtSortFn () {
+      try {
+        const res = await eidtSortApi(this.editId, this.eidtNewSort)
+        console.log(res)
+        this.eidtSortVisible = false
+        this.getGoodsRortList()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    eidtSortVisibleFn (id) {
+      this.eidtSortVisible = true
+      this.editId = id
+    },
+    // ok--- 编辑弹框的x ---
+    handleClose () {
+      this.eidtSortVisible = false
+    },
+    // ok --- 删除商品分类 ---
+    delFn (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        try {
+          await delSortApi(id)
+          await this.getGoodsRortList()
+        } catch (error) {
+          console.log(error)
+        }
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+
+    // ok --- 设置每页条数函数 ---
     handleSizeChange (val) {
       this.page.pagesize = val
       this.getGoodsRortList()
     },
-    // --- 设置当前页面函数 ---
+    // ok --- 设置当前页面函数 ---
     handleCurrentChange (val) {
       console.log(val)
       this.page.pagenum = val
       this.getGoodsRortList()
     },
-    // --- 请求用户列表函数 ---
+    // ok --- 请求用户列表函数 ---
     async getGoodsRortList () {
       try {
         // 发送ajax
